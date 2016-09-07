@@ -7,8 +7,21 @@ import java.util.Properties;
 
 public class Admin {
 	
+	//-------------------
+	//----Constantes-----
+	//-------------------
+	/**
+	 *Constante que modela el nombre del archivo properties
+	 **/
 	private static final String NOMBRE_ARCHIVO = "config.properties";
+	/**
+	 *Constante que modela la ubicacion del archivo properties
+	 **/
 	private static final String UBI_ARCHIVO = "data/";
+	
+	//-------------------
+	//----Atributos------
+	//-------------------
 	private int numClientes = 0;
 	private int numServidores = 0;
 	private int tamanoBuffer = 0;
@@ -16,7 +29,6 @@ public class Admin {
 	//-------------------
 	//-----Metodos-------
 	//-------------------
-
 	/**
 	 * Metodo que se encarga de leer el archivo de configuracion con los parametros de inicializacion del buffer
 	 * Pos: Los parametros del archivo de configuracion inicializan el buffer y quedan almacenados
