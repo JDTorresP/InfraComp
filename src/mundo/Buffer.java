@@ -11,7 +11,7 @@ public class Buffer {
 	private int numServidores = 0;
 	private int tamanoBuffer = 0;
 	private int numActualClientes= 0;
-	
+
 	/**
 	 * Lista de clientes inicializados por el buffer
 	 */
@@ -24,13 +24,13 @@ public class Buffer {
 	 * Lista de mensajes pendientes de respuesta recibidos por el buffer
 	 */
 	private ArrayList<Mensaje> listaMensajes;
-	
+
 	/**
 	 * Cola de clientes que quieren enviar mensajes
 	 */
 	private ArrayList<Cliente> colaClientes;
-	
-	
+
+
 	//------------------------------
 	//-----Metodo Constructor-------
 	//------------------------------
@@ -44,6 +44,18 @@ public class Buffer {
 		servidores = new ArrayList<Servidor>(numS);
 		listaMensajes = new ArrayList<Mensaje>(tam);
 		colaClientes = new ArrayList<Cliente>(numC);
+
+		//Crea y almacena referencias a los servidores
+		for(int i = 0; i < numServidores; i++)
+		{
+			servidores.add( new Servidor(i, this) );
+		}
+		
+		//Crea clientes
+		for(int i = 0; i < numClientes; i++)
+		{
+			clientes.add( new Cliente(i, this) );
+		}
 	}
 	//---------------------------
 	//-----Metodos Get/Set-------
@@ -72,17 +84,26 @@ public class Buffer {
 	public void setNumActualClientes(int numActualClientes) {
 		this.numActualClientes = numActualClientes;
 	}
-	
+
 	//-------------------
 	//-----Metodos-------
 	//-------------------
-	
+
 	/**
 	 * Metodo que se encarga de crear a los clientes y servidores e iniciar el programa.
 	 */
-	
 	private void iniciarConeccion()
 	{
-		
+		//Inicializa los threads de clientes
+		for(int i = 0; i < clientes.size(); i++)
+		{
+			clientes.get(i).start();
+		}
+
+		//Inicializa los threads de servidores
+		for(int i = 0; i < servidores.size(); i++)
+		{
+			servidores.get(i).start();
+		}
 	}
 }
