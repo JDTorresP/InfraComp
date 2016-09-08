@@ -50,7 +50,7 @@ public class Buffer {
 		{
 			servidores.add( new Servidor(i, this) );
 		}
-		
+
 		//Crea clientes
 		for(int i = 0; i < numClientes; i++)
 		{
@@ -104,6 +104,69 @@ public class Buffer {
 		for(int i = 0; i < servidores.size(); i++)
 		{
 			servidores.get(i).start();
+		}
+	}
+
+	/**
+	 * Metodo que llama un Cliente para enviar un mensaje al buffer
+	 * @param mensaje objeto de tipo Mensaje que envia el cliente
+	 * @return true si fue posible almacenar el mensaje, false de lo contrario
+	 */
+	synchronized public boolean recibirMensaje(Mensaje mensaje)
+	{
+		synchronized(listaMensajes)
+		{
+			synchronized(this)
+			{
+				if (listaMensajes.size() < tamanoBuffer)
+				{
+					listaMensajes.add(mensaje);
+					System.out.println("cantidad mensajes guardados: " + listaMensajes.size());//TODO
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Metodo que llama un cliente para terminar su ejecucion porque resolvio todos los mensajes correctamente
+	 */
+	synchronized public void retirarCliente(Cliente c)
+	{
+		synchronized(this)
+		{
+			for (int i = 0; i < clientes.size(); i++)
+			{
+				Cliente c1 = clientes.get(i);
+				if (c1.compareTo(c) == 0)
+				{
+					clientes.remove(i);
+				}
+			}
+			numActualClientes--;
+			System.out.println("numero actual clientes: " + numActualClientes); 
+
+			if (getNumActualClientes() == 0)
+			{
+				terminarServidores();
+			}
+
+		}
+
+	}
+
+	/**
+	 * Metodo que se encarga de avisarles a los threads Servidor paren.
+	 */
+	public void terminarServidores()
+	{
+		//	System.exit(0);
+		System.out.println("El buffer manda a los servidores a terminar");
+		for(int i = 0; i < servidores.size(); i++)
+		{
+			System.out.println("corre el for con server " + i);
+			//servidores.get(i).stop();
 		}
 	}
 }
