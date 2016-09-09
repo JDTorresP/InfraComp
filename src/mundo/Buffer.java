@@ -128,6 +128,36 @@ public class Buffer {
 		}
 		return false;
 	}
+	
+	/**
+	 * 
+	 * @param mensaje
+	 * @return
+	 */
+	synchronized public Mensaje pedirrMensaje()
+	{
+		Mensaje mensaje=null;
+		synchronized(listaMensajes)
+		{
+			synchronized(this)
+			{
+				if (listaMensajes.size() > 0)
+				{
+					mensaje=listaMensajes.get(0);
+					listaMensajes.remove(0);
+				}
+				
+				if(colaClientes.size()>0)
+				{
+					synchronized(colaClientes.get(0))
+					{
+						colaClientes.get(0).notify();
+					}
+				}
+			}
+		}
+		return mensaje;
+	}
 
 	/**
 	 * Metodo que llama un cliente para terminar su ejecucion porque resolvio todos los mensajes correctamente

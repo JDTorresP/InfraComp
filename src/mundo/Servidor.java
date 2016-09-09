@@ -37,4 +37,9 @@ public class Servidor extends Thread {
 		hayClientes = true;
 	}
 	
+	public void run()
+	{
+
+	}
+	
 }
