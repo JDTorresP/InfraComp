@@ -92,7 +92,7 @@ public class Buffer {
 	/**
 	 * Metodo que se encarga de crear a los clientes y servidores e iniciar el programa.
 	 */
-	private void iniciarConeccion()
+	public void iniciarConeccion()
 	{
 		//Inicializa los threads de clientes
 		for(int i = 0; i < clientes.size(); i++)

@@ -13,7 +13,7 @@ public class Servidor extends Thread {
 	/**
 	 * El canal del que el servidor tomara los mensajes para responderlos
 	 */
-	private Buffer canal;
+	private Buffer buffer;
 
 	/**
 	 * Mensaje que el servidor esta respondiendo actualmente
@@ -29,10 +29,10 @@ public class Servidor extends Thread {
 	//-----Metodo Constructor-------
 	//------------------------------
 	
-	public Servidor(int id, Buffer canal)
+	public Servidor(int id, Buffer buffer)
 	{
 		this.id = id;
-		this.canal = canal;
+		this.buffer = buffer;
 		mensajeActual = null;
 		hayClientes = true;
 	}

@@ -42,16 +42,18 @@ public class Admin {
 		FileInputStream fileInput = new FileInputStream(file);
 		Properties properties = new Properties();
 		properties.load(fileInput);
-
+		System.out.println("lee los archivos");
 		numClientes = Integer.parseInt( properties.getProperty("numClientes") );
 		numServidores = Integer.parseInt( properties.getProperty("numServidores") );
 		tamanoBuffer = Integer.parseInt( properties.getProperty("tamanoBuffer") );
 		fileInput.close();
-		Buffer canal = new Buffer(numClientes, numServidores, tamanoBuffer);
+		Buffer bf = new Buffer(numClientes, numServidores, tamanoBuffer);
+		bf.iniciarConeccion();
 	}
 	public static void main(String[] args) throws IOException {
 		
 		Admin a = new Admin();
+		
 	}
 	public int getNumClientes() {
 		return numClientes;
