@@ -52,5 +52,35 @@ public class Mensaje {
 		this.mensaje = mensaje;
 		respuesta = "";
 	}
+	
+	//-------------
+	//Metodos
+	//-------------
+	
+	public String getId()
+	{
+		return id;
+	}
+	
+	synchronized public void recibirRespuesta(String rta)
+	{
+		respuesta = rta;
+		enviarRespuesta();
+	}
+	
+	synchronized private void enviarRespuesta()
+	{
+		synchronized(this)
+		{
+			synchronized(remitente)
+			{
+				remitente.notify();
+			}
+		}
+	}
+	
 
+
+	
+	
 }

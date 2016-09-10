@@ -1,6 +1,13 @@
 package mundo;
 
 public class Servidor extends Thread {
+	
+	
+	/**
+	 * Respuesta por defecto del servidor en caso de no haber otra especificada
+	 */
+	private final static String RTA = "OK";
+	
 	//-------------------
 	//----Atributos------
 	//-------------------
@@ -40,6 +47,23 @@ public class Servidor extends Thread {
 	public void run()
 	{
 
+	}
+	
+	public Mensaje getMensajeActual()
+	{
+		return mensajeActual;
+	}
+	
+	synchronized private void solicitarMensaje()
+	{
+		mensajeActual = buffer.pedirrMensaje();
+		System.out.println(mensajeActual);
+	}
+	
+	synchronized private void responderMensaje()
+	{
+		mensajeActual.recibirRespuesta(RTA);
+		mensajeActual = null;
 	}
 	
 }

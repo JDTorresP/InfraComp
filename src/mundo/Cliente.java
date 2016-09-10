@@ -132,11 +132,16 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 		}
 		return rta;
 	}
+	
+	public int darId()
+	{
+		return id;
+	}
 
 	@Override
 	public int compareTo(Cliente o) {
 		// TODO Auto-generated method stub
-		return 0;
+		return id - o.darId();
 	}
 
 }
