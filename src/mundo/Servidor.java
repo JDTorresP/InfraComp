@@ -84,5 +84,4 @@ public class Servidor extends Thread {
 		mensajeActual.recibirRespuesta(RTA);
 		mensajeActual = null;
 	}
-	
 }

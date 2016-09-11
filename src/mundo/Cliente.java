@@ -89,17 +89,6 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 	}
 
 	/**
-	 * metodo que retira al cliente del buffer
-	 */
-	private void terminar() {
-		synchronized(this)
-		{
-			buffer.retirarCliente(this);
-			termino = true;
-		}
-	}
-
-	/**
 	 * metodo que recibe respuesta a un mensaje
 	 */
 	private void recibirRespuesta() {
@@ -110,7 +99,8 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 
 			if (numeroMsAEnviar == msRespondidos)
 			{
-				terminar();
+				buffer.retirarCliente(this);
+				termino = true;
 			}
 		}
 	}

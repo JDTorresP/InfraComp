@@ -27,11 +27,6 @@ public class Buffer {
 	 */
 	private ArrayList<Mensaje> listaMensajes;
 
-	/**
-	 * Cola de clientes que quieren enviar mensajes
-	 */
-	private ArrayList<Cliente> colaClientes;
-
 
 	//Costructor
 	
@@ -45,7 +40,6 @@ public class Buffer {
 		clientes = new ArrayList<Cliente>(numC);
 		servidores = new ArrayList<Servidor>(numS);
 		listaMensajes = new ArrayList<Mensaje>(tam);
-		colaClientes = new ArrayList<Cliente>(numC);
 
 
 		for(int i = 0; i < numServidores; i++)

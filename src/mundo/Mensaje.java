@@ -88,4 +88,32 @@ public class Mensaje {
 		}
 	}
 	
+	//metodos get/set
+	public Cliente getRemitente() {
+		return remitente;
+	}
+
+	public void setRemitente(Cliente remitente) {
+		this.remitente = remitente;
+	}
+
+	public String getMensaje() {
+		return mensaje;
+	}
+
+	public void setMensaje(String mensaje) {
+		this.mensaje = mensaje;
+	}
+
+	public String getRespuesta() {
+		return respuesta;
+	}
+
+	public void setRespuesta(String respuesta) {
+		this.respuesta = respuesta;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 }
