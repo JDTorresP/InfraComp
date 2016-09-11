@@ -56,7 +56,7 @@ public class Admin {
 		
 		fileInput.close();
 		Buffer bf = new Buffer(numClientes, numServidores, tamanoBuffer);
-		bf.iniciarConeccion();
+		bf.iniciarConexion();
 		
 	}
 	

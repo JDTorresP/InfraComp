@@ -54,7 +54,7 @@ public class Servidor extends Thread {
 					yield();
 				}
 			}
-			if((buffer.getNumActualClientes()>0)&&mensajeActual!=null)
+			if(mensajeActual!=null)
 			{
 				//System.out.println("Servidor "+id+" tiene mensaje");
 				synchronized(this)

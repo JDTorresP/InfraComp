@@ -1,7 +1,5 @@
 package mundo;
 
-import java.util.Random;
-
 public class Cliente extends Thread implements Comparable<Cliente>{
 
 	//-------------------------------------------------------------------------------
