@@ -50,29 +50,26 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 	//-----Metodo Constructor-------
 	//------------------------------
 	/**
-	 * @param id id del cliente, no es necesario en la arquitectura actual (caso 1), pero se agrega por seguridad.
-	 * @param canal
+	 * metodo que crea un nuevo cliente, para facilitar las pruebas en numero de mensajes a 
+	 * enviar es el id del cliente +1.
+	 * @param id
+	 * @param buffer
 	 */
 	public Cliente(int id, Buffer buffer)
 	{
-		super();
 		termino = false;
 		this.id = id;
 		this.buffer = buffer;
+		
 		msRespondidos = 0;
 		msEnviados = 0;
-		numeroMsAEnviar = ( new Random() ).nextInt(MAX_MENSAJES) + 1;
+		numeroMsAEnviar = id+1;
 	}
 
 	public void run()
 	{
-		if(!termino)
-		{
-			terminar();
-		}
 		while(msRespondidos < numeroMsAEnviar)
 		{
-			//respuesta al ultimo mensaje enviado
 			boolean msenv = false;
 
 			while( !msenv )
@@ -80,13 +77,14 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 				msenv = enviarMensaje();
 				yield();
 			}
+			
 			synchronized(this)
 			{
 				try 
 				{
 					wait();
 				} 
-				catch (InterruptedException e)
+				catch (Exception e)
 				{
 					e.printStackTrace();
 				}
@@ -94,13 +92,16 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 
 			synchronized(this)
 			{
-				recibirRespuestaMensaje();
+				recibirRespuesta();
 			}
 
-			System.out.println("Se han respondido " + msRespondidos + " para el cliente de id " + id); //TODO
+			System.out.println("Se han respondido " + msRespondidos + " para el cliente de id " + id);
 		}
 	}
 
+	/**
+	 * metodo que retira al cliente del buffer
+	 */
 	private void terminar() {
 		synchronized(this)
 		{
@@ -109,7 +110,10 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 		}
 	}
 
-	private void recibirRespuestaMensaje() {
+	/**
+	 * metodo que recibe respuesta a un mensaje
+	 */
+	private void recibirRespuesta() {
 
 		synchronized(this)
 		{
@@ -120,9 +124,12 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 				terminar();
 			}
 		}
-
 	}
 
+	/**
+	 * metodo que envia un mensaje al buffer,
+	 * @return true si se envia con exito el mensaje, false de lo contrario
+	 */
 	private boolean enviarMensaje() {
 		Mensaje mensaje = new Mensaje(id + ":" + msEnviados, this);
 		boolean rta = buffer.recibirMensaje(mensaje);
@@ -140,7 +147,6 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 
 	@Override
 	public int compareTo(Cliente o) {
-		// TODO Auto-generated method stub
 		return id - o.darId();
 	}
 

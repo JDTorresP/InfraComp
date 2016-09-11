@@ -27,10 +27,6 @@ public class Servidor extends Thread {
 	 */
 	private Mensaje mensajeActual;
 
-	/**
-	 * True si hay clientes, false de lo contrario.
-	 */
-	private boolean hayClientes;
 	
 	//------------------------------
 	//-----Metodo Constructor-------
@@ -41,11 +37,32 @@ public class Servidor extends Thread {
 		this.id = id;
 		this.buffer = buffer;
 		mensajeActual = null;
-		hayClientes = true;
 	}
 	
 	public void run()
 	{
+		
+		while(buffer.getNumActualClientes()>0)
+		{
+			
+			synchronized(this)
+			{
+				while((buffer.getNumActualClientes()>0)&&mensajeActual==null)
+				{
+					//System.out.println("Servidor "+id+" intenta solicitar mensaje");
+					solicitarMensaje();
+					yield();
+				}
+			}
+			if((buffer.getNumActualClientes()>0)&&mensajeActual!=null)
+			{
+				//System.out.println("Servidor "+id+" tiene mensaje");
+				synchronized(this)
+				{
+					responderMensaje();
+				}
+			}
+		}
 
 	}
 	
@@ -54,12 +71,18 @@ public class Servidor extends Thread {
 		return mensajeActual;
 	}
 	
+	/**
+	 * solicita un mensaje al buffer
+	 */
 	synchronized private void solicitarMensaje()
 	{
-		mensajeActual = buffer.pedirrMensaje();
-		System.out.println(mensajeActual);
+		mensajeActual = buffer.pedirMensaje();
+		//System.out.println(mensajeActual);
 	}
 	
+	/**
+	 * manda la respuesta al mensaje actual
+	 */
 	synchronized private void responderMensaje()
 	{
 		mensajeActual.recibirRespuesta(RTA);

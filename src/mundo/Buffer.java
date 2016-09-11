@@ -7,19 +7,23 @@ public class Buffer {
 	//-------------------
 	//----Atributos------
 	//-------------------
+
 	private int numClientes = 0 ;
 	private int numServidores = 0;
 	private int tamanoBuffer = 0;
 	private int numActualClientes= 0;
 
+	
 	/**
 	 * Lista de clientes inicializados por el buffer
 	 */
 	private ArrayList<Cliente> clientes;
+	
 	/**
 	 * Lista de servidores inicializados por el Buffer
 	 */
 	private ArrayList<Servidor> servidores;
+	
 	/**
 	 * Lista de mensajes pendientes de respuesta recibidos por el buffer
 	 */
@@ -40,6 +44,7 @@ public class Buffer {
 		setNumServidores(numS);
 		setTamanoBuffer(tam);
 		setNumActualClientes(numC);
+		
 		clientes = new ArrayList<Cliente>(numC);
 		servidores = new ArrayList<Servidor>(numS);
 		listaMensajes = new ArrayList<Mensaje>(tam);
@@ -57,40 +62,13 @@ public class Buffer {
 			clientes.add( new Cliente(i, this) );
 		}
 	}
-	//---------------------------
-	//-----Metodos Get/Set-------
-	//---------------------------
-	public int getNumClientes() {
-		return numClientes;
-	}
-	public void setNumClientes(int numClientes) {
-		this.numClientes = numClientes;
-	}
-	public int getNumServidores() {
-		return numServidores;
-	}
-	public void setNumServidores(int numServidores) {
-		this.numServidores = numServidores;
-	}
-	public int getTamanoBuffer() {
-		return tamanoBuffer;
-	}
-	public void setTamanoBuffer(int tamanoBuffer) {
-		this.tamanoBuffer = tamanoBuffer;
-	}
-	public int getNumActualClientes() {
-		return numActualClientes;
-	}
-	public void setNumActualClientes(int numActualClientes) {
-		this.numActualClientes = numActualClientes;
-	}
 
 	//-------------------
 	//-----Metodos-------
 	//-------------------
 
 	/**
-	 * Metodo que se encarga de crear a los clientes y servidores e iniciar el programa.
+	 * Metodo que se encarga de iniciar clientes y servidores.
 	 */
 	public void iniciarConeccion()
 	{
@@ -121,7 +99,7 @@ public class Buffer {
 				if (listaMensajes.size() < tamanoBuffer)
 				{
 					listaMensajes.add(mensaje);
-					System.out.println("cantidad mensajes guardados: " + listaMensajes.size());//TODO
+					System.out.println("cantidad mensajes guardados: " + listaMensajes.size());
 					return true;
 				}
 			}
@@ -130,11 +108,11 @@ public class Buffer {
 	}
 	
 	/**
-	 * 
+	 * metodo que llama un servidor para pedir un mensaje.
 	 * @param mensaje
-	 * @return
+	 * @return el mensaje en la posicion 0 de la cola de mensajes
 	 */
-	synchronized public Mensaje pedirrMensaje()
+	synchronized public Mensaje pedirMensaje()
 	{
 		Mensaje mensaje=null;
 		synchronized(listaMensajes)
@@ -172,31 +150,42 @@ public class Buffer {
 				if (c1.compareTo(c) == 0)
 				{
 					clientes.remove(i);
+					numActualClientes--;
 				}
 			}
-			numActualClientes--;
+			
 			System.out.println("numero actual clientes: " + numActualClientes); 
 
-			if (getNumActualClientes() == 0)
-			{
-				terminarServidores();
-			}
-
 		}
-
 	}
 
-	/**
-	 * Metodo que se encarga de avisarles a los threads Servidor paren.
-	 */
-	public void terminarServidores()
-	{
-		//	System.exit(0);
-		System.out.println("El buffer manda a los servidores a terminar");
-		for(int i = 0; i < servidores.size(); i++)
-		{
-			System.out.println("corre el for con server " + i);
-			//servidores.get(i).stop();
-		}
+	
+	//---------------------------
+	//-----Metodos Get/Set-------
+	//---------------------------
+	
+	public int getNumClientes() {
+		return numClientes;
+	}
+	public void setNumClientes(int numClientes) {
+		this.numClientes = numClientes;
+	}
+	public int getNumServidores() {
+		return numServidores;
+	}
+	public void setNumServidores(int numServidores) {
+		this.numServidores = numServidores;
+	}
+	public int getTamanoBuffer() {
+		return tamanoBuffer;
+	}
+	public void setTamanoBuffer(int tamanoBuffer) {
+		this.tamanoBuffer = tamanoBuffer;
+	}
+	public int getNumActualClientes() {
+		return numActualClientes;
+	}
+	public void setNumActualClientes(int numActualClientes) {
+		this.numActualClientes = numActualClientes;
 	}
 }

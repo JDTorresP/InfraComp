@@ -62,12 +62,19 @@ public class Mensaje {
 		return id;
 	}
 	
+	/**
+	 * recibe la respuesta al mensaje
+	 * @param rta
+	 */
 	synchronized public void recibirRespuesta(String rta)
 	{
 		respuesta = rta;
 		enviarRespuesta();
 	}
 	
+	/**
+	 * le avisa al cliente que ya tiene respuesta
+	 */
 	synchronized private void enviarRespuesta()
 	{
 		synchronized(this)

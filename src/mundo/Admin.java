@@ -10,6 +10,7 @@ public class Admin {
 	//-------------------
 	//----Constantes-----
 	//-------------------
+	
 	/**
 	 *Constante que modela el nombre del archivo properties
 	 **/
@@ -19,16 +20,22 @@ public class Admin {
 	 **/
 	private static final String UBI_ARCHIVO = "data/";
 	
+	
 	//-------------------
 	//----Atributos------
 	//-------------------
+	
 	private int numClientes = 0;
+	
 	private int numServidores = 0;
+	
 	private int tamanoBuffer = 0;
+	
 	
 	//-------------------
 	//-----Metodos-------
 	//-------------------
+	
 	/**
 	 * Metodo que se encarga de leer el archivo de configuracion con los parametros de inicializacion del buffer
 	 * Pos: Los parametros del archivo de configuracion inicializan el buffer y quedan almacenados
@@ -37,24 +44,36 @@ public class Admin {
 	
 	public Admin() throws IOException
 	{
-		Properties prop = new Properties();
 		File file = new File( UBI_ARCHIVO+ NOMBRE_ARCHIVO);
 		FileInputStream fileInput = new FileInputStream(file);
 		Properties properties = new Properties();
 		properties.load(fileInput);
 		System.out.println("lee los archivos");
+		
 		numClientes = Integer.parseInt( properties.getProperty("numClientes") );
 		numServidores = Integer.parseInt( properties.getProperty("numServidores") );
 		tamanoBuffer = Integer.parseInt( properties.getProperty("tamanoBuffer") );
+		
 		fileInput.close();
 		Buffer bf = new Buffer(numClientes, numServidores, tamanoBuffer);
 		bf.iniciarConeccion();
+		
 	}
+	
+	
+	
 	public static void main(String[] args) throws IOException {
 		
 		Admin a = new Admin();
 		
 	}
+	
+	
+	//---------------------------
+    //-----Metodos Get/Set-------
+	//---------------------------
+	
+	
 	public int getNumClientes() {
 		return numClientes;
 	}
