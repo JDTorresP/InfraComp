@@ -2,15 +2,14 @@ package mundo;
 
 public class Servidor extends Thread {
 	
+	//Constantes
 	
 	/**
 	 * Respuesta por defecto del servidor en caso de no haber otra especificada
 	 */
 	private final static String RTA = "OK";
 	
-	//-------------------
-	//----Atributos------
-	//-------------------
+	//Atributos
 	
 	/**
 	 * id del servidor
@@ -28,9 +27,7 @@ public class Servidor extends Thread {
 	private Mensaje mensajeActual;
 
 	
-	//------------------------------
-	//-----Metodo Constructor-------
-	//------------------------------
+	//Constructor
 	
 	public Servidor(int id, Buffer buffer)
 	{
@@ -38,6 +35,8 @@ public class Servidor extends Thread {
 		this.buffer = buffer;
 		mensajeActual = null;
 	}
+	
+	//metodos
 	
 	public void run()
 	{
@@ -49,14 +48,12 @@ public class Servidor extends Thread {
 			{
 				while((buffer.getNumActualClientes()>0)&&mensajeActual==null)
 				{
-					//System.out.println("Servidor "+id+" intenta solicitar mensaje");
 					solicitarMensaje();
 					yield();
 				}
 			}
 			if(mensajeActual!=null)
 			{
-				//System.out.println("Servidor "+id+" tiene mensaje");
 				synchronized(this)
 				{
 					responderMensaje();
@@ -77,7 +74,6 @@ public class Servidor extends Thread {
 	synchronized private void solicitarMensaje()
 	{
 		mensajeActual = buffer.pedirMensaje();
-		//System.out.println(mensajeActual);
 	}
 	
 	/**

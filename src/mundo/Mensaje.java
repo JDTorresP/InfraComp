@@ -2,6 +2,7 @@ package mundo;
 
 public class Mensaje {
 	
+	//Atributos
 	
 	/**
 	 * Mensaje enviado entre todos los clientes
@@ -28,6 +29,9 @@ public class Mensaje {
 	 */
 	private String respuesta;
  
+	
+	//Constructores
+	
 	/**
 	 * Constructor que asigna al mensaje del objeto el mensaje por defecto.
 	 * @param remitente creador del objeto Mensaje
@@ -53,9 +57,7 @@ public class Mensaje {
 		respuesta = "";
 	}
 	
-	//-------------
 	//Metodos
-	//-------------
 	
 	public String getId()
 	{
@@ -85,9 +87,5 @@ public class Mensaje {
 			}
 		}
 	}
-	
-
-
-	
 	
 }

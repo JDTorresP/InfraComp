@@ -2,18 +2,8 @@ package mundo;
 
 public class Cliente extends Thread implements Comparable<Cliente>{
 
-	//-------------------------------------------------------------------------------
-	//Constantes
-	//-------------------------------------------------------------------------------
 
-	/**
-	 * Constante maximo de mensajes
-	 */
-	private final static int MAX_MENSAJES = 10;
-
-	//-------------------
-	//----Atributos------
-	//-------------------
+	//Atributos
 
 	/**
 	 * Identificador entero del Cliente
@@ -44,9 +34,7 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 	 */
 	boolean termino;
 
-	//------------------------------
-	//-----Metodo Constructor-------
-	//------------------------------
+	//Constructor
 	/**
 	 * metodo que crea un nuevo cliente, para facilitar las pruebas en numero de mensajes a 
 	 * enviar es el id del cliente +1.
@@ -62,8 +50,11 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 		msRespondidos = 0;
 		msEnviados = 0;
 		numeroMsAEnviar = id+1;
+		//numeroMsAEnviar = (int)((Math.random()*15)+1);
 	}
 
+	//Metodos
+	
 	public void run()
 	{
 		while(msRespondidos < numeroMsAEnviar)

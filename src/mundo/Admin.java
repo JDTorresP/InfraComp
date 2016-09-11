@@ -7,9 +7,7 @@ import java.util.Properties;
 
 public class Admin {
 	
-	//-------------------
-	//----Constantes-----
-	//-------------------
+	//Constantes
 	
 	/**
 	 *Constante que modela el nombre del archivo properties
@@ -21,9 +19,7 @@ public class Admin {
 	private static final String UBI_ARCHIVO = "data/";
 	
 	
-	//-------------------
-	//----Atributos------
-	//-------------------
+	//Atributos
 	
 	private int numClientes = 0;
 	
@@ -32,9 +28,7 @@ public class Admin {
 	private int tamanoBuffer = 0;
 	
 	
-	//-------------------
-	//-----Metodos-------
-	//-------------------
+	//Metodos
 	
 	/**
 	 * Metodo que se encarga de leer el archivo de configuracion con los parametros de inicializacion del buffer
@@ -56,7 +50,6 @@ public class Admin {
 		
 		fileInput.close();
 		Buffer bf = new Buffer(numClientes, numServidores, tamanoBuffer);
-		bf.iniciarConexion();
 		
 	}
 	
@@ -69,9 +62,7 @@ public class Admin {
 	}
 	
 	
-	//---------------------------
-    //-----Metodos Get/Set-------
-	//---------------------------
+	//Metodos get/set
 	
 	
 	public int getNumClientes() {

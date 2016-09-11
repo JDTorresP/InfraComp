@@ -4,9 +4,7 @@ import java.util.ArrayList;
 
 public class Buffer {
 
-	//-------------------
-	//----Atributos------
-	//-------------------
+	//Atributos
 
 	private int numClientes = 0 ;
 	private int numServidores = 0;
@@ -35,9 +33,8 @@ public class Buffer {
 	private ArrayList<Cliente> colaClientes;
 
 
-	//------------------------------
-	//-----Metodo Constructor-------
-	//------------------------------
+	//Costructor
+	
 	public Buffer(int numC,int numS,int tam)
 	{
 		setNumClientes(numC);
@@ -50,40 +47,23 @@ public class Buffer {
 		listaMensajes = new ArrayList<Mensaje>(tam);
 		colaClientes = new ArrayList<Cliente>(numC);
 
-		//Crea y almacena referencias a los servidores
+
 		for(int i = 0; i < numServidores; i++)
 		{
 			servidores.add( new Servidor(i, this) );
+			servidores.get(i).start();
 		}
 
-		//Crea clientes
+		
 		for(int i = 0; i < numClientes; i++)
 		{
 			clientes.add( new Cliente(i, this) );
-		}
-	}
-
-	//-------------------
-	//-----Metodos-------
-	//-------------------
-
-	/**
-	 * Metodo que se encarga de iniciar clientes y servidores.
-	 */
-	public void iniciarConexion()
-	{
-		//Inicializa los threads de clientes
-		for(int i = 0; i < clientes.size(); i++)
-		{
 			clientes.get(i).start();
 		}
-
-		//Inicializa los threads de servidores
-		for(int i = 0; i < servidores.size(); i++)
-		{
-			servidores.get(i).start();
-		}
 	}
+
+	//Metodos
+
 
 	/**
 	 * Metodo que llama un Cliente para enviar un mensaje al buffer
@@ -124,14 +104,6 @@ public class Buffer {
 					mensaje=listaMensajes.get(0);
 					listaMensajes.remove(0);
 				}
-				
-				if(colaClientes.size()>0)
-				{
-					synchronized(colaClientes.get(0))
-					{
-						colaClientes.get(0).notify();
-					}
-				}
 			}
 		}
 		return mensaje;
@@ -160,9 +132,7 @@ public class Buffer {
 	}
 
 	
-	//---------------------------
-	//-----Metodos Get/Set-------
-	//---------------------------
+	//Metodos get/set
 	
 	public int getNumClientes() {
 		return numClientes;
