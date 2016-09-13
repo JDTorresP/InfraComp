@@ -124,7 +124,6 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 		return id;
 	}
 
-	@Override
 	public int compareTo(Cliente o) {
 		return id - o.darId();
 	}

@@ -73,7 +73,16 @@ public class Buffer {
 				if (listaMensajes.size() < tamanoBuffer)
 				{
 					listaMensajes.add(mensaje);
-					System.out.println("cantidad mensajes guardados: " + listaMensajes.size());
+					System.out.println("cantidad mensajes guardados: " + listaMensajes.size() );
+					
+						for(int i=0;i<servidores.size();i++)
+						{
+							synchronized(servidores.get(i))
+							{
+								servidores.get(i).notify();
+							}
+						}
+						
 					return true;
 				}
 			}
@@ -88,19 +97,21 @@ public class Buffer {
 	 */
 	synchronized public Mensaje pedirMensaje()
 	{
-		Mensaje mensaje=null;
 		synchronized(listaMensajes)
 		{
 			synchronized(this)
 			{
+				Mensaje mensaje=null;
 				if (listaMensajes.size() > 0)
 				{
 					mensaje=listaMensajes.get(0);
 					listaMensajes.remove(0);
+					System.out.println("se ha pedido un mensaje del cliente");
+					return mensaje;
 				}
 			}
 		}
-		return mensaje;
+		return null;
 	}
 
 	/**
@@ -117,6 +128,20 @@ public class Buffer {
 				{
 					clientes.remove(i);
 					numActualClientes--;
+				}
+			}
+			
+			synchronized(this)
+			{
+				if(numActualClientes==0)
+				{
+					for(int i=0;i<servidores.size();i++)
+					{
+						synchronized(servidores.get(i))
+						{
+							servidores.get(i).notify();
+						}
+					}
 				}
 			}
 			
@@ -153,3 +178,4 @@ public class Buffer {
 		this.numActualClientes = numActualClientes;
 	}
 }
+
