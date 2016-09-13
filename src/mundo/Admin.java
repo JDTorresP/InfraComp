@@ -54,7 +54,11 @@ public class Admin {
 	}
 	
 	
-	
+	/**
+	 * metodo main
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 		
 		Admin a = new Admin();

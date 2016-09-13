@@ -46,9 +46,7 @@ public class Servidor extends Thread {
 			while(buffer.getNumActualClientes()>0&&mensajeActual==null)
 			{
 				buffer.esperar();
-				System.out.println("he despertado");
 				mensajeActual=buffer.pedirMensaje();
-				System.out.println("pedi mensaje" +mensajeActual);
 			}
 			
 			if(mensajeActual!=null)

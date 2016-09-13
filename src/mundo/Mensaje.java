@@ -81,7 +81,6 @@ public class Mensaje {
 	{
 		synchronized(this)
 		{
-			System.out.println("enviando respuesta");
 			notify();
 		}
 	}

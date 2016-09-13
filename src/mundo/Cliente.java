@@ -49,7 +49,7 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 		
 		msRespondidos = 0;
 		msEnviados = 0;
-		numeroMsAEnviar = id+10;
+		numeroMsAEnviar = id+1;
 		//numeroMsAEnviar = (int)((Math.random()*15)+1);
 	}
 

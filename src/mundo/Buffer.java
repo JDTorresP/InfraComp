@@ -99,7 +99,6 @@ public class Buffer {
 				{
 					mensaje=listaMensajes.get(0);
 					listaMensajes.remove(0);
-					System.out.println("se ha pedido un mensaje del cliente");
 					return mensaje;
 				}
 			}
@@ -128,7 +127,6 @@ public class Buffer {
 			{
 				if(numActualClientes==0)
 				{
-					System.out.println("hemos terminado"); 
 					notifyAll();
 				}
 			}
@@ -138,10 +136,12 @@ public class Buffer {
 		}
 	}
 	
+	/**
+	 * duerme a un thread en el buffer
+	 */
 	synchronized public void esperar()
 	{
 		try {
-			System.out.println("zzz");
 			wait();
 		} 
 		catch (InterruptedException e) {
@@ -149,10 +149,15 @@ public class Buffer {
 		}
 	}
 	
+	/**
+	 * despierta a todos los threads dormidos en el buffer
+	 */
 	synchronized public void despertarTodos()
 	{
 		notifyAll();
 	}
+	
+	
 	//Metodos get/set
 
 	public int getNumClientes() {
