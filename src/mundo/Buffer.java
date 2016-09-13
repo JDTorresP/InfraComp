@@ -11,17 +11,14 @@ public class Buffer {
 	private int tamanoBuffer = 0;
 	private int numActualClientes= 0;
 
-	
-	/**
-	 * Lista de clientes inicializados por el buffer
-	 */
-	private ArrayList<Cliente> clientes;
-	
+
+
+
 	/**
 	 * Lista de servidores inicializados por el Buffer
 	 */
 	private ArrayList<Servidor> servidores;
-	
+
 	/**
 	 * Lista de mensajes pendientes de respuesta recibidos por el buffer
 	 */
@@ -29,30 +26,21 @@ public class Buffer {
 
 
 	//Costructor
-	
+
 	public Buffer(int numC,int numS,int tam)
 	{
 		setNumClientes(numC);
 		setNumServidores(numS);
 		setTamanoBuffer(tam);
 		setNumActualClientes(numC);
-		
-		clientes = new ArrayList<Cliente>(numC);
+
 		servidores = new ArrayList<Servidor>(numS);
 		listaMensajes = new ArrayList<Mensaje>(tam);
 
-
 		for(int i = 0; i < numServidores; i++)
 		{
-			servidores.add( new Servidor(i, this) );
-			servidores.get(i).start();
-		}
-
-		
-		for(int i = 0; i < numClientes; i++)
-		{
-			clientes.add( new Cliente(i, this) );
-			clientes.get(i).start();
+			new Servidor(i,this).start();
+			System.out.println("servidor " + i);
 		}
 	}
 
@@ -80,7 +68,7 @@ public class Buffer {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * metodo que llama un servidor para pedir un mensaje.
 	 * @param mensaje
@@ -93,11 +81,10 @@ public class Buffer {
 		{
 			synchronized(this)
 			{
-				if (listaMensajes.size() > 0)
-				{
-					mensaje=listaMensajes.get(0);
-					listaMensajes.remove(0);
-				}
+
+				mensaje=listaMensajes.get(0);
+				listaMensajes.remove(0);
+
 			}
 		}
 		return mensaje;
@@ -110,24 +97,46 @@ public class Buffer {
 	{
 		synchronized(this)
 		{
-			for (int i = 0; i < clientes.size(); i++)
-			{
-				Cliente c1 = clientes.get(i);
-				if (c1.compareTo(c) == 0)
-				{
-					clientes.remove(i);
-					numActualClientes--;
-				}
-			}
-			
-			System.out.println("numero actual clientes: " + numActualClientes); 
+
+			numActualClientes--;
 
 		}
+
+		System.out.println("numero actual clientes: " + numActualClientes); 
+
 	}
 
-	
+
+	/**
+	 * le avisa al servidor que ya hay mensajes disponibles
+	 */
+	synchronized private void hayMensajes()
+	{
+		synchronized(this)
+		{
+			
+				servidores.notify();
+			
+		}
+
+	}
+
+	synchronized public void esperar()
+	{
+		System.out.println("me estoy durmiendo");
+		try
+		{
+			wait();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("me desperté");
+
+	}
+
 	//Metodos get/set
-	
+
 	public int getNumClientes() {
 		return numClientes;
 	}
@@ -151,5 +160,8 @@ public class Buffer {
 	}
 	public void setNumActualClientes(int numActualClientes) {
 		this.numActualClientes = numActualClientes;
+	}
+	public ArrayList<Mensaje> getListaMensajes() {
+		return listaMensajes;
 	}
 }

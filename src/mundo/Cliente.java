@@ -46,7 +46,7 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 		termino = false;
 		this.id = id;
 		this.buffer = buffer;
-		
+
 		msRespondidos = 0;
 		msEnviados = 0;
 		numeroMsAEnviar = id+1;
@@ -54,7 +54,7 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 	}
 
 	//Metodos
-	
+
 	public void run()
 	{
 		while(msRespondidos < numeroMsAEnviar)
@@ -66,25 +66,15 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 				msenv = enviarMensaje();
 				yield();
 			}
-			
-			synchronized(this)
-			{
-				try 
-				{
-					wait();
-				} 
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
 
-			synchronized(this)
-			{
-				recibirRespuesta();
-			}
+
+
+
+			recibirRespuesta();
+
 
 			System.out.println("Se han respondido " + msRespondidos + " para el cliente de id " + id);
+
 		}
 	}
 
@@ -93,15 +83,12 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 	 */
 	private void recibirRespuesta() {
 
-		synchronized(this)
-		{
-			msRespondidos++;
+		msRespondidos++;
 
-			if (numeroMsAEnviar == msRespondidos)
-			{
-				buffer.retirarCliente(this);
-				termino = true;
-			}
+		if (numeroMsAEnviar == msRespondidos)
+		{
+			buffer.retirarCliente(this);
+			termino = true;
 		}
 	}
 
@@ -115,10 +102,13 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 		if(rta)
 		{
 			msEnviados++;
+			mensaje.esperar();
+
 		}
+
 		return rta;
 	}
-	
+
 	public int darId()
 	{
 		return id;

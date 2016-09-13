@@ -3,6 +3,7 @@ package mundo;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Properties;
 
 public class Admin {
@@ -27,6 +28,11 @@ public class Admin {
 	
 	private int tamanoBuffer = 0;
 	
+	/**
+	 * Lista de clientes inicializados por el buffer
+	 */
+	private ArrayList<Cliente> clientes;
+	
 	
 	//Metodos
 	
@@ -47,9 +53,16 @@ public class Admin {
 		numClientes = Integer.parseInt( properties.getProperty("numClientes") );
 		numServidores = Integer.parseInt( properties.getProperty("numServidores") );
 		tamanoBuffer = Integer.parseInt( properties.getProperty("tamanoBuffer") );
-		
-		fileInput.close();
 		Buffer bf = new Buffer(numClientes, numServidores, tamanoBuffer);
+		
+		for(int i = 0; i < numClientes; i++)
+		{
+			new Cliente(i, bf).start();
+			System.out.println("Se creó cliente " + i);
+		}
+
+		fileInput.close();
+
 		
 	}
 	

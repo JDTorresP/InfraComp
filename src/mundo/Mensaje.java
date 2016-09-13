@@ -88,6 +88,18 @@ public class Mensaje {
 		}
 	}
 	
+	synchronized public void esperar()
+	{
+		try {
+			wait();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
+	
+	
 	//metodos get/set
 	public Cliente getRemitente() {
 		return remitente;
