@@ -11,17 +11,17 @@ public class Buffer {
 	private int tamanoBuffer = 0;
 	private int numActualClientes= 0;
 
-	
+
 	/**
 	 * Lista de clientes inicializados por el buffer
 	 */
 	private ArrayList<Cliente> clientes;
-	
+
 	/**
 	 * Lista de servidores inicializados por el Buffer
 	 */
 	private ArrayList<Servidor> servidores;
-	
+
 	/**
 	 * Lista de mensajes pendientes de respuesta recibidos por el buffer
 	 */
@@ -29,14 +29,14 @@ public class Buffer {
 
 
 	//Costructor
-	
+
 	public Buffer(int numC,int numS,int tam)
 	{
 		setNumClientes(numC);
 		setNumServidores(numS);
 		setTamanoBuffer(tam);
 		setNumActualClientes(numC);
-		
+
 		clientes = new ArrayList<Cliente>(numC);
 		servidores = new ArrayList<Servidor>(numS);
 		listaMensajes = new ArrayList<Mensaje>(tam);
@@ -48,7 +48,7 @@ public class Buffer {
 			servidores.get(i).start();
 		}
 
-		
+
 		for(int i = 0; i < numClientes; i++)
 		{
 			clientes.add( new Cliente(i, this) );
@@ -75,21 +75,14 @@ public class Buffer {
 					listaMensajes.add(mensaje);
 					System.out.println("cantidad mensajes guardados: " + listaMensajes.size() );
 					
-						for(int i=0;i<servidores.size();i++)
-						{
-							synchronized(servidores.get(i))
-							{
-								servidores.get(i).notify();
-							}
-						}
-						
+					notifyAll();
 					return true;
 				}
 			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * metodo que llama un servidor para pedir un mensaje.
 	 * @param mensaje
@@ -130,29 +123,38 @@ public class Buffer {
 					numActualClientes--;
 				}
 			}
-			
+
 			synchronized(this)
 			{
 				if(numActualClientes==0)
 				{
-					for(int i=0;i<servidores.size();i++)
-					{
-						synchronized(servidores.get(i))
-						{
-							servidores.get(i).notify();
-						}
-					}
+					System.out.println("hemos terminado"); 
+					notifyAll();
 				}
 			}
-			
+
 			System.out.println("numero actual clientes: " + numActualClientes); 
 
 		}
 	}
-
 	
+	synchronized public void esperar()
+	{
+		try {
+			System.out.println("zzz");
+			wait();
+		} 
+		catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	synchronized public void despertarTodos()
+	{
+		notifyAll();
+	}
 	//Metodos get/set
-	
+
 	public int getNumClientes() {
 		return numClientes;
 	}

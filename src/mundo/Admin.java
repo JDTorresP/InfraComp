@@ -60,28 +60,4 @@ public class Admin {
 		Admin a = new Admin();
 		
 	}
-	
-	
-	//Metodos get/set
-	
-	
-	public int getNumClientes() {
-		return numClientes;
-	}
-	public void setNumClientes(int numClientes) {
-		this.numClientes = numClientes;
-	}
-	public int getNumServidores() {
-		return numServidores;
-	}
-	public void setNumServidores(int numServidores) {
-		this.numServidores = numServidores;
-	}
-	public int getTamanoBuffer() {
-		return tamanoBuffer;
-	}
-	public void setTamanoBuffer(int tamanoBuffer) {
-		this.tamanoBuffer = tamanoBuffer;
-	}
-
 }

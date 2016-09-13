@@ -49,7 +49,7 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 		
 		msRespondidos = 0;
 		msEnviados = 0;
-		numeroMsAEnviar = id+1;
+		numeroMsAEnviar = id+10;
 		//numeroMsAEnviar = (int)((Math.random()*15)+1);
 	}
 
@@ -67,17 +67,6 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 				yield();
 			}
 			
-			synchronized(this)
-			{
-				try 
-				{
-					wait();
-				} 
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
 
 			synchronized(this)
 			{
@@ -115,6 +104,7 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 		if(rta)
 		{
 			msEnviados++;
+			mensaje.esperar();
 		}
 		return rta;
 	}

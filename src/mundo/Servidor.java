@@ -45,17 +45,10 @@ public class Servidor extends Thread {
 		{
 			while(buffer.getNumActualClientes()>0&&mensajeActual==null)
 			{
-				synchronized(this)
-				{
-					try {
-						System.out.println("zzz");
-						wait();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
+				buffer.esperar();
 				System.out.println("he despertado");
 				mensajeActual=buffer.pedirMensaje();
+				System.out.println("pedi mensaje" +mensajeActual);
 			}
 			
 			if(mensajeActual!=null)
@@ -66,6 +59,8 @@ public class Servidor extends Thread {
 				}
 			}
 		}
+		System.out.println("termine");
+		buffer.despertarTodos();
 
 	}
 
@@ -78,8 +73,8 @@ public class Servidor extends Thread {
 	 */
 	synchronized private void responderMensaje()
 	{
-		mensajeActual.recibirRespuesta(RTA);
 		System.out.println(mensajeActual.getRespuesta());
+		mensajeActual.recibirRespuesta(RTA);
 		mensajeActual = null;
 	}
 }

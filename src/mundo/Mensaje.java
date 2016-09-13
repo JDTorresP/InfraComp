@@ -81,9 +81,20 @@ public class Mensaje {
 	{
 		synchronized(this)
 		{
-			synchronized(remitente)
-			{
-				remitente.notify();
+			System.out.println("enviando respuesta");
+			notify();
+		}
+	}
+	
+	synchronized public void esperar()
+	{
+		synchronized(this)
+		{
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}
