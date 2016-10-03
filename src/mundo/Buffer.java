@@ -30,7 +30,7 @@ public class Buffer {
 
 	//Costructor
 
-	public Buffer(int numC,int numS,int tam)
+	public Buffer(int numC,int numS,int tam, int numMen)
 	{
 		setNumClientes(numC);
 		setNumServidores(numS);
@@ -51,7 +51,7 @@ public class Buffer {
 
 		for(int i = 0; i < numClientes; i++)
 		{
-			clientes.add( new Cliente(i, this) );
+			clientes.add( new Cliente(i, this, numMen) );
 			clientes.get(i).start();
 		}
 	}

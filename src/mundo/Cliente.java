@@ -41,7 +41,7 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 	 * @param id
 	 * @param buffer
 	 */
-	public Cliente(int id, Buffer buffer)
+	public Cliente(int id, Buffer buffer, int numMen)
 	{
 		termino = false;
 		this.id = id;
@@ -49,7 +49,7 @@ public class Cliente extends Thread implements Comparable<Cliente>{
 		
 		msRespondidos = 0;
 		msEnviados = 0;
-		numeroMsAEnviar = id+1;
+		numeroMsAEnviar = numMen;
 		//numeroMsAEnviar = (int)((Math.random()*15)+1);
 	}
 

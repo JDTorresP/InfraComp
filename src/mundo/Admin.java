@@ -27,6 +27,8 @@ public class Admin {
 	
 	private int tamanoBuffer = 0;
 	
+	private int numMensajes = 0;
+	
 	
 	//Metodos
 	
@@ -47,9 +49,10 @@ public class Admin {
 		numClientes = Integer.parseInt( properties.getProperty("numClientes") );
 		numServidores = Integer.parseInt( properties.getProperty("numServidores") );
 		tamanoBuffer = Integer.parseInt( properties.getProperty("tamanoBuffer") );
+		numMensajes = Integer.parseInt( properties.getProperty("numMensajes") );
 		
 		fileInput.close();
-		Buffer bf = new Buffer(numClientes, numServidores, tamanoBuffer);
+		Buffer bf = new Buffer(numClientes, numServidores, tamanoBuffer, numMensajes);
 		
 	}
 	
