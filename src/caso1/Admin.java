@@ -1,4 +1,4 @@
-package mundo;
+package caso1;
 
 import java.io.File;
 import java.io.FileInputStream;
