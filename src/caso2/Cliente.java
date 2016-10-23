@@ -28,13 +28,14 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.x500.X500Principal;
 
+import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 
 public class Cliente {
 
 	//IP y Puerto
 
-	public final static String IP= "192.168.0.17";
+	public final static String IP= "localhost";
 
 	public final static int PUERTO=4443;
 
@@ -168,7 +169,12 @@ public class Cliente {
 			else if(estado==2)
 			{
 				X509Certificate cert = generarCertificadoDigital();
-				fromUser=cert.toString()+"-PEM";
+				Base64 encoder = new Base64();
+				String cert1 = encoder.encodeBase64String(cert.getEncoded());
+				
+				fromUser="-----BEGIN CERTIFICATE-----" + "\n";
+				fromUser+=cert1 + "\n";
+				fromUser+="-----END CERTIFICATE-----"+ "\n";
 
 				//				fromUser="Version: "+cert.getVersion()+"\n";
 				//				fromUser+=" SerialNumber: "+cert.getSerialNumber()+"\n";
@@ -186,6 +192,7 @@ public class Cliente {
 			}
 			else if(estado==3)
 			{
+				//Falta leer bien el certificado del servidor.
 				X509Certificate certServidor = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(s.getInputStream());
 				llavePublicaServidor = certServidor.getPublicKey();
 
