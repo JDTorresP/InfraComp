@@ -11,6 +11,7 @@ import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -23,6 +24,8 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.x500.X500Principal;
 
 import org.bouncycastle.x509.X509V3CertificateGenerator;
@@ -33,7 +36,7 @@ public class Cliente {
 
 	public final static String IP= "192.168.0.17";
 
-	public final static int PUERTO=4444;
+	public final static int PUERTO=4443;
 
 
 	//Algoritmos por defecto
@@ -68,10 +71,9 @@ public class Cliente {
 	private PrivateKey privateKey;
 
 
+	//Constructor
 	public Cliente() throws Exception{
 
-		//		generarLlaves();
-		//		ver();
 		decidirAlgoritmos();
 		generarLlaves();
 		conectarConServidor();
@@ -79,17 +81,6 @@ public class Cliente {
 	}
 
 	//comunicacion
-	public void ver()throws Exception
-	{
-		X509Certificate cert = generarCertificadoDigital();
-		String[] envio = cert.toString().split("\n");
-		for(int i=0;i<envio.length;i++)
-		{
-			System.out.print(envio[i]);
-		}
-
-	}
-
 
 	public void decidirAlgoritmos() throws Exception
 	{
@@ -141,9 +132,7 @@ public class Cliente {
 					hmac=fromUser;
 					eje=false;
 				}
-
 			}
-
 		}
 	}
 
@@ -159,6 +148,10 @@ public class Cliente {
 
 		BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 		String fromUser="";
+		String fromServidor="";
+
+		PublicKey llavePublicaServidor = null;
+		SecretKey llaveSimetrica = null;
 
 		while (ejecutar) {
 
@@ -175,38 +168,56 @@ public class Cliente {
 			else if(estado==2)
 			{
 				X509Certificate cert = generarCertificadoDigital();
+				fromUser=cert.toString()+"-PEM";
 
-//				String[] envio = cert.toString().split("\n");
-//				for(int i=0;i<envio.length-1;i++)
-//				{
-//					pw.println(envio[i]);
-//				}
-				fromUser = "CERTFICADOCLIENTE";
+				//				fromUser="Version: "+cert.getVersion()+"\n";
+				//				fromUser+=" SerialNumber: "+cert.getSerialNumber()+"\n";
+				//				fromUser+=" IssuerDN: "+cert.getIssuerDN()+"\n";
+				//				fromUser+=" Start Date: "+cert.getNotBefore()+"\n";
+				//				fromUser+=" Final Date: "+cert.getNotAfter()+"\n";
+				//				fromUser+=" SubjectDN: "+cert.getSubjectDN()+"\n";
+				//				fromUser+=" Public Key: "+cert.getPublicKey().getAlgorithm() + " Public Key"+"\n";
+				//				fromUser+=" modulus: 94243a09bdc637704df1c653b2563ddde33eb3ddaea9eba495ea8c99f0a1b7a7f641831740afa56964f3da5020b0f4609d72c101d4948191b35f396df64bcd4f78a4cbe5c30cf28483eb09ee6f88b4f8cdcec146fee5baf10cf75540f5c9389fbb2175220e059b1c5f63a6155a89c3e34a532100fb52e257a0f06b6a3a2d6daf"+"\n";
+				//				fromUser+=" public exponent: 10001"+"\n";
+				//				fromUser+=" Signature Algorithm: "+cert.getSigAlgName()+"\n";
+				//				fromUser+=" Signature: "+cert.getSignature().toString()+"\n";
+				//				fromUser += "-PEM";
 
 			}
 			else if(estado==3)
 			{
-//				PublicKey llavePublicaServidor = null;
-//				X509Certificate certServidor = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(s.getInputStream());
-//				llavePublicaServidor = certServidor.getPublicKey();
+				X509Certificate certServidor = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(s.getInputStream());
+				llavePublicaServidor = certServidor.getPublicKey();
 
 				fromUser="OK";
 
 			}
 			else if(estado==4)
 			{
-				fromUser="CIFRADOKS+";
+				//Obtener y descifrar la llave simétrica
+				String cadenaLlaveEncriptada = fromServidor;
+				byte[] llaveDescifrada = descifrar(deEnterosABytes(cadenaLlaveEncriptada), privateKey, algoritmoAsimetrico);
+				llaveSimetrica = new SecretKeySpec(llaveDescifrada, algoritmoSimetrico);
+
+				//Cifrar la llave simétrica y enviarla de vuelta
+				byte[] llaveRecifrada = cifrar(llaveDescifrada, llavePublicaServidor, algoritmoAsimetrico);
+				fromUser=deBytesAEnteros(llaveRecifrada);
 			}
 			else if(estado==5)
 			{
-				fromUser="CIFRADOLS1";
+				//aun no se que va aqui
+				String consulta = "asdasd";
+				byte[] consultaCifrada = cifrar(consulta.getBytes(), llaveSimetrica, algoritmoSimetrico);
+				byte[] resumen = crearResumenDigital(consulta.getBytes());
+
+				fromUser=consultaCifrada+":"+resumen;
 				ejecutar=false;
 			}
 
 			System.out.println("Cliente: " + fromUser);
 			pw.println(fromUser);
 
-			recibirRespuesta();
+			fromServidor=recibirRespuesta();
 		}
 		stdIn.close();
 		terminarComunicacion();
@@ -221,7 +232,7 @@ public class Cliente {
 			if(rta.equals("ERROR"))
 			{
 				System.err.println("Error reportado por el servidor. Terminando conexión.");
-				terminarComunicacion();
+				ejecutar=false;
 			}
 			else
 			{
@@ -232,6 +243,7 @@ public class Cliente {
 		else
 		{
 			System.out.println("no se recibio respuesta");
+			ejecutar=false;
 		}
 		return rta;
 	}
@@ -270,12 +282,20 @@ public class Cliente {
 		return c.doFinal(datosADescifrar);
 	}
 
+	private byte[] crearResumenDigital(byte[] buffer) throws Exception {
+		
+		MessageDigest md5 = MessageDigest.getInstance(hmac);
+		md5.update(buffer);
+		return md5.digest();
+	}
+
+
 
 	//certificado digital
 	private X509Certificate generarCertificadoDigital() throws Exception
 	{
 		X509V3CertificateGenerator certGen = new X509V3CertificateGenerator();
-		X500Principal nombre = new X500Principal("CN=Aasdas");
+		X500Principal nombre = new X500Principal("CN=QWERTY V1 Certificate");
 		BigInteger serialAleatorio = new BigInteger( 10, new Random() );
 
 
@@ -296,6 +316,26 @@ public class Cliente {
 		return cert;
 	}
 
+	//encapsulamiento
+
+	public String deBytesAEnteros( byte[] b )
+	{	
+		String ret = "";
+		for (int i = 0 ; i < b.length ; i++) {
+			String g = Integer.toHexString(((char)b[i])&0x00ff);
+			ret += (g.length()==1?"0":"") + g;
+		}
+		return ret;
+	}
+
+	public byte[] deEnterosABytes( String ss)
+	{	
+		byte[] ret = new byte[ss.length()/2];
+		for (int i = 0 ; i < ret.length ; i++) {
+			ret[i] = (byte) Integer.parseInt(ss.substring(i*2,(i+1)*2), 16);
+		}
+		return ret;
+	}
 
 	//main
 	public static void main(String[] args) throws Exception {
