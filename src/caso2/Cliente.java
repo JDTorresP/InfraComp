@@ -1,7 +1,9 @@
 package caso2;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.math.BigInteger;
@@ -15,6 +17,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Date;
@@ -192,9 +195,14 @@ public class Cliente {
 			}
 			else if(estado==3)
 			{
-				//Falta leer bien el certificado del servidor.
-				X509Certificate certServidor = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(s.getInputStream());
-				llavePublicaServidor = certServidor.getPublicKey();
+				System.out.println("Intenta recibir el certificado");
+				PublicKey llaveser= recibirCertificado();
+				System.out.println("Intenta leer el servidor");
+				byte[] descifrado= leerServidor(parLlaves.getPrivate());
+				SecretKey s= new SecretKeySpec(descifrado, "DES");
+				System.out.println("lo leyo prro");
+//				X509Certificate certServidor = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(s.getInputStream());
+//				llavePublicaServidor = certServidor.getPublicKey();
 
 				fromUser="OK";
 
@@ -230,6 +238,48 @@ public class Cliente {
 		terminarComunicacion();
 	}
 
+	public byte [] leerServidor(PrivateKey llave) throws IOException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException
+	{
+		String cifrado = br.readLine();
+		System.out.println("Num1 Cifrado: "+cifrado);
+		System.out.println("Num1 Cifrado: "+cifrado);
+		String[] arr= cifrado.split(":");
+		
+		byte[] num2Destr = Transformer.destransformar(arr[1]);
+		System.out.println("Num1 Destransformado: "+num2Destr);
+		byte[] mensajeDescifrado = descifrar(num2Destr, llave,"RSA");
+		String llavesim= Transformer.transformar(mensajeDescifrado);
+		System.out.println("Llavesim: "+llavesim);
+		return mensajeDescifrado;
+	}
+	public PublicKey recibirCertificado() throws IOException, CertificateException
+	{
+		 byte[] certificadoServidorBytes = new byte[520];
+		 int offset = 0;
+		 String linea = br.readLine();
+
+		 int l= 64;
+
+		 System.out.println(linea+""+l);
+	
+		       int numBytesLeidos = s.getInputStream().read(certificadoServidorBytes, offset, 520- offset);
+		       System.out.println("SUCCESS0");
+		       if (numBytesLeidos <= 0) {
+		        
+		         s.close();
+		        }
+		        System.out.println("SUCCESS0");
+		        pw.println("ESTADO"+":"+"OK");
+		        CertificateFactory creador = CertificateFactory.getInstance("X.509");
+		        InputStream in = new ByteArrayInputStream(certificadoServidorBytes);
+		        System.out.println("SUCCESS");
+		        X509Certificate certificadoCliente = (X509Certificate)creador.generateCertificate(in);
+
+		System.out.println("SUCCESS");
+		
+		
+		return certificadoCliente.getPublicKey();
+	}
 	private String recibirRespuesta() throws Exception
 	{
 		String rta = br.readLine();
@@ -282,7 +332,7 @@ public class Cliente {
 		return c.doFinal(datosACifrar);
 	}
 
-	public byte[] descifrar(byte[] datosADescifrar, Key llave, String algoritmo) throws Exception
+	public byte[] descifrar(byte[] datosADescifrar, Key llave, String algoritmo) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException
 	{
 		Cipher c = Cipher.getInstance(algoritmo); 
 		c.init(Cipher.DECRYPT_MODE, llave); 
