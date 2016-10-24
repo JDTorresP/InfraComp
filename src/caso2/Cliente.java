@@ -1,12 +1,16 @@
 package caso2;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.StringBufferInputStream;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
@@ -193,9 +197,28 @@ public class Cliente {
 			else if(estado==3)
 			{
 				//Falta leer bien el certificado del servidor.
-				X509Certificate certServidor = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(s.getInputStream());
-				llavePublicaServidor = certServidor.getPublicKey();
+				String cert = br.readLine();
+			
+				String lineaSiguiente = "";
+				int c = 0;
+			
+				while(!(lineaSiguiente = br.readLine()).equals("-----END CERTIFICATE-----")){
 
+					cert+=lineaSiguiente;
+					System.out.println(lineaSiguiente);
+					
+				}
+				
+				System.out.println(cert);
+				System.out.println("Llegó");
+				
+				Base64 encoder = new Base64();
+				byte[] cerb = encoder.decodeBase64(cert);
+				InputStream stream = new ByteArrayInputStream(cerb);
+			
+				X509Certificate certServidor = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(stream);
+				llavePublicaServidor = certServidor.getPublicKey();
+				
 				fromUser="OK";
 
 			}
