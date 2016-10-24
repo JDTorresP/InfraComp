@@ -226,8 +226,14 @@ public class Cliente {
 			else if(estado==4)
 			{
 				//Obtener y descifrar la llave simétrica
+			
+				fromServidor = br.readLine();
 				String cadenaLlaveEncriptada = fromServidor;
+				System.out.println(algoritmoAsimetrico);
+				System.out.println(cadenaLlaveEncriptada);
+				System.out.println(privateKey);
 				byte[] llaveDescifrada = descifrar(deEnterosABytes(cadenaLlaveEncriptada), privateKey, algoritmoAsimetrico);
+				
 				llaveSimetrica = new SecretKeySpec(llaveDescifrada, algoritmoSimetrico);
 
 				//Cifrar la llave simétrica y enviarla de vuelta
@@ -247,7 +253,7 @@ public class Cliente {
 
 			System.out.println("Cliente: " + fromUser);
 			pw.println(fromUser);
-
+			
 			fromServidor=recibirRespuesta();
 		}
 		stdIn.close();
