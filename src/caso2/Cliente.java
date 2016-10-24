@@ -2,14 +2,13 @@ package caso2;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+
 import java.math.BigInteger;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
+
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
@@ -18,15 +17,16 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+
 import java.util.Date;
 import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -229,9 +229,7 @@ public class Cliente {
 			
 				fromServidor = br.readLine();
 				String cadenaLlaveEncriptada = fromServidor;
-				System.out.println(algoritmoAsimetrico);
-				System.out.println(cadenaLlaveEncriptada);
-				System.out.println(privateKey);
+
 				byte[] llaveDescifrada = descifrar(deEnterosABytes(cadenaLlaveEncriptada), privateKey, algoritmoAsimetrico);
 				
 				llaveSimetrica = new SecretKeySpec(llaveDescifrada, algoritmoSimetrico);
@@ -243,11 +241,14 @@ public class Cliente {
 			else if(estado==5)
 			{
 				//aun no se que va aqui
-				String consulta = "asdasd";
+				String consulta = "12345";
+				
 				byte[] consultaCifrada = cifrar(consulta.getBytes(), llaveSimetrica, algoritmoSimetrico);
-				byte[] resumen = crearResumenDigital(consulta.getBytes());
+				byte[] resumen = crearResumenDigital(consulta.getBytes(), llaveSimetrica);
+				
+				
 
-				fromUser=consultaCifrada+":"+resumen;
+				fromUser=deBytesAEnteros(consultaCifrada)+":"+ deBytesAEnteros(resumen);
 				ejecutar=false;
 			}
 
@@ -360,13 +361,15 @@ public class Cliente {
 		c.init(Cipher.DECRYPT_MODE, llave); 
 		return c.doFinal(datosADescifrar);
 	}
-
-	private byte[] crearResumenDigital(byte[] buffer) throws Exception {
-		
-		MessageDigest md5 = MessageDigest.getInstance(hmac);
-		md5.update(buffer);
-		return md5.digest();
+	
+	private byte[] crearResumenDigital(byte[] data, SecretKey llave) throws NoSuchAlgorithmException, InvalidKeyException
+	{
+		Mac mc = Mac.getInstance(hmac);
+		mc.init(llave);
+		mc.update(data);
+		return mc.doFinal();
 	}
+
 
 
 
