@@ -257,17 +257,18 @@ public class Cliente {
 
 			System.out.println("Cliente: " + fromUser);
 			pw.println(fromUser);
+			
+			fromServidor=recibirRespuesta();
+			
 			if(!ejecutar)
 			{
-				String rtaCifrada = br.readLine();
-				System.out.println(rtaCifrada);
-				byte[] rtaDescifrada = descifrar(deEnterosABytes(rtaCifrada), llaveSimetrica, algoritmoSimetrico);
-				System.out.println("Se supone que esta es la rta " + deBytesAEnteros(rtaDescifrada));
+
+				byte[] rtaDescifrada = descifrar(deEnterosABytes(fromServidor), llaveSimetrica, algoritmoSimetrico);
+				System.out.println("la respuesta: " + new String(rtaDescifrada));
 				pw.println("Resultado recibido");
 				
 			}
-			
-			fromServidor=recibirRespuesta();
+
 		}
 		stdIn.close();
 		terminarComunicacion();
