@@ -40,7 +40,7 @@ public class Cliente {
 
 	public final static String IP= "localhost";
 
-	public final static int PUERTO=4443;
+	public int puerto;
 
 
 	//Algoritmos por defecto
@@ -76,12 +76,25 @@ public class Cliente {
 
 
 	//Constructor
-	public Cliente() throws Exception{
+	public Cliente(boolean seguridad) throws Exception{
 
-		decidirAlgoritmos();
-		generarLlaves();
-		conectarConServidor();
-		manejoComunicacion();
+//		decidirAlgoritmos();
+		if(seguridad)
+		{
+			puerto = 4443;
+			generarLlaves();
+			conectarConServidor();
+			manejoComunicacion();
+		}
+		else
+		{
+			System.out.println("sin seguridad");
+			puerto = 4444;
+			conectarConServidor();
+			manejoComunicacionSinSeguridad();
+		}
+			
+		
 	}
 
 	//comunicacion
@@ -98,6 +111,7 @@ public class Cliente {
 			if(es==0)
 			{
 				System.out.println("Defina un algoritmo Simetrico");
+			
 				fromUser = stdIn.readLine();
 
 				if(!fromUser.equals("DES")&&!fromUser.equals("AES")&& !fromUser.equals("Blowfish")&&!fromUser.equals("RC4"))
@@ -142,11 +156,11 @@ public class Cliente {
 
 	public void conectarConServidor() throws Exception
 	{
-		s = new Socket(IP, PUERTO);
+		s = new Socket(IP, puerto);
 		pw = new PrintWriter(s.getOutputStream(), true);
 		br = new BufferedReader(new InputStreamReader(s.getInputStream()));
 	}
-
+	
 	public void manejoComunicacion() throws Exception
 	{
 
@@ -161,8 +175,9 @@ public class Cliente {
 
 			if(estado==0)
 			{
-				System.out.print("Escriba HOLA para iniciar la consulta:");
-				fromUser = stdIn.readLine();
+//				System.out.println("Escriba HOLA para iniciar la consulta:");
+				
+				fromUser = "HOLA";
 			}
 			else if(estado==1)
 			{
@@ -179,24 +194,10 @@ public class Cliente {
 				fromUser+=cert1 + "\n";
 				fromUser+="-----END CERTIFICATE-----"+ "\n";
 
-				//				fromUser="Version: "+cert.getVersion()+"\n";
-				//				fromUser+=" SerialNumber: "+cert.getSerialNumber()+"\n";
-				//				fromUser+=" IssuerDN: "+cert.getIssuerDN()+"\n";
-				//				fromUser+=" Start Date: "+cert.getNotBefore()+"\n";
-				//				fromUser+=" Final Date: "+cert.getNotAfter()+"\n";
-				//				fromUser+=" SubjectDN: "+cert.getSubjectDN()+"\n";
-				//				fromUser+=" Public Key: "+cert.getPublicKey().getAlgorithm() + " Public Key"+"\n";
-				//				fromUser+=" modulus: 94243a09bdc637704df1c653b2563ddde33eb3ddaea9eba495ea8c99f0a1b7a7f641831740afa56964f3da5020b0f4609d72c101d4948191b35f396df64bcd4f78a4cbe5c30cf28483eb09ee6f88b4f8cdcec146fee5baf10cf75540f5c9389fbb2175220e059b1c5f63a6155a89c3e34a532100fb52e257a0f06b6a3a2d6daf"+"\n";
-				//				fromUser+=" public exponent: 10001"+"\n";
-				//				fromUser+=" Signature Algorithm: "+cert.getSigAlgName()+"\n";
-				//				fromUser+=" Signature: "+cert.getSignature().toString()+"\n";
-				//				fromUser += "-PEM";
-
 			}
 			else if(estado==3)
 			{
 
-				//Falta leer bien el certificado del servidor.
 				String cert = br.readLine();
 			
 				String lineaSiguiente = "";
@@ -208,8 +209,8 @@ public class Cliente {
 					
 				}
 				
-				System.out.println("Ceritificado codificado en B64:" + cert);
-				System.out.println("Llegó");
+//				System.out.println("Ceritificado codificado en B64:" + cert);
+//				System.out.println("Llegó");
 				
 				Base64 encoder = new Base64();
 				byte[] cerb = encoder.decodeBase64(cert);
@@ -244,18 +245,15 @@ public class Cliente {
 				
 				byte[] consultaCifrada = cifrar(consulta.getBytes(), llaveSimetrica, algoritmoSimetrico);
 				byte[] resumen = crearResumenDigital(consulta.getBytes(), llaveSimetrica);
-				byte[] resumenCifrado = cifrar(resumen, llaveSimetrica, algoritmoSimetrico);
-				
+				byte[] resumenCifrado = cifrar(resumen, llaveSimetrica, algoritmoSimetrico);			
 
 				fromUser=deBytesAEnteros(consultaCifrada)+":"+ deBytesAEnteros(resumenCifrado);
-				
-
 				
 				ejecutar=false;
 				
 			}
 
-			System.out.println("Cliente: " + fromUser);
+//			System.out.println("Cliente: " + fromUser);
 			pw.println(fromUser);
 			
 			fromServidor=recibirRespuesta();
@@ -268,6 +266,66 @@ public class Cliente {
 				pw.println("Resultado recibido");
 				
 			}
+
+		}
+		stdIn.close();
+		terminarComunicacion();
+	}
+
+	public void manejoComunicacionSinSeguridad() throws Exception
+	{
+
+		BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+		String fromUser="";
+		String fromServidor="";
+
+		PublicKey llavePublicaServidor = null;
+		SecretKey llaveSimetrica = null;
+
+		while (ejecutar) {
+
+			if(estado==0)
+			{
+//				System.out.println("Escriba HOLA para iniciar la consulta:");
+				
+				fromUser = "HOLA";
+			}
+			else if(estado==1)
+			{
+				fromUser="ALGORITMOS:"+algoritmoSimetrico+":"+algoritmoAsimetrico+":"+hmac;
+
+			}
+			else if(estado==2)
+			{							
+				fromUser="CERTFICADOCLIENTE";
+			}
+			else if(estado==3 && fromServidor.equals("CERTIFICADOSERVIDOR"))
+			{
+				fromUser="OK";
+			}
+			else if(estado==4 && fromServidor.equals("CIFRADOKC+"))
+			{
+				fromUser="CIFRADOKS+";
+			}
+			else if(estado==5 && fromServidor.equals("OK"))
+			{
+				fromUser="CIFRADOLS1";
+				ejecutar=false;				
+			}
+
+//			System.out.println("Cliente: " + fromUser);
+			pw.println(fromUser);
+			
+			fromServidor=recibirRespuesta();
+			
+//			if(!ejecutar)
+//			{
+//
+//				byte[] rtaDescifrada = descifrar(deEnterosABytes(fromServidor), llaveSimetrica, algoritmoSimetrico);
+//				System.out.println("la respuesta: " + new String(rtaDescifrada));
+//				pw.println("Resultado recibido");
+//				
+//			}
 
 		}
 		stdIn.close();
@@ -287,7 +345,7 @@ public class Cliente {
 			}
 			else
 			{
-				System.out.println("Servidor: " + rta);
+//				System.out.println("Servidor: " + rta);
 				estado++;
 			}
 		}
@@ -298,6 +356,8 @@ public class Cliente {
 		}
 		return rta;
 	}
+	
+	
 
 	private void terminarComunicacion() throws Exception
 	{
@@ -388,8 +448,8 @@ public class Cliente {
 	}
 
 	//main
-	public static void main(String[] args) throws Exception {
-
-		Cliente c = new Cliente();
-	}
+//	public static void main(String[] args) throws Exception {
+//
+//		Cliente c = new Cliente(false);
+//	}
 }

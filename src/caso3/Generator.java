@@ -5,6 +5,7 @@ import uniandes.gload.core.Task;
 
 public class Generator
 {
+	
 /**
  * Carga el servicio del generador del lib
  */
@@ -13,7 +14,7 @@ public class Generator
 	public Generator()
 	{
 		Task work = createTask();
-		int numberOfTasks = 100;
+		int numberOfTasks = 10;
 		int gapBetweenTASKS = 1000;
 		generator = new LoadGenerator("Cliente - Server Load Test", numberOfTasks, work, gapBetweenTASKS);
 		generator.generate();
@@ -24,9 +25,8 @@ public class Generator
 		return new ClientServerTask();
 	}
 	
-	public static void main(String args)
+	public static void main(String[] args)
 	{
-		@SuppressWarnings("unused")
 		Generator gen = new Generator();
 	}
 }
