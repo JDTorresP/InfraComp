@@ -38,7 +38,7 @@ public class Cliente {
 
 	//IP y Puerto
 
-	public final static String IP= "localhost";
+	public final static String IP= "172.24.42.139";
 
 	public int puerto;
 
@@ -159,6 +159,7 @@ public class Cliente {
 		s = new Socket(IP, puerto);
 		pw = new PrintWriter(s.getOutputStream(), true);
 		br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+		
 	}
 	
 	public void manejoComunicacion() throws Exception
@@ -170,7 +171,8 @@ public class Cliente {
 
 		PublicKey llavePublicaServidor = null;
 		SecretKey llaveSimetrica = null;
-
+		Long inicioComunicacion = System.currentTimeMillis();
+		Long inicioConsulta = 0L;
 		while (ejecutar) {
 
 			if(estado==0)
@@ -237,9 +239,12 @@ public class Cliente {
 				//Cifrar la llave simétrica y enviarla de vuelta
 				byte[] llaveRecifrada = cifrar(llaveDescifrada, llavePublicaServidor, algoritmoAsimetrico);
 				fromUser=deBytesAEnteros(llaveRecifrada);
+				Long tiempoTotalBitacora = System.currentTimeMillis()- inicioComunicacion;
+				System.out.println(" tiempo de respuesta para autenticar a los participantes  "+ (tiempoTotalBitacora) +" milisegundos");
 			}
 			else if(estado==5)
 			{
+				inicioConsulta = System.currentTimeMillis();
 				//Consulta: un código de identificación de cuenta
 				String consulta = "12345";
 				
@@ -257,6 +262,8 @@ public class Cliente {
 			pw.println(fromUser);
 			
 			fromServidor=recibirRespuesta();
+			Long tiempoTotalBitacora = System.currentTimeMillis()- inicioConsulta;
+			System.out.println("tiempo de respuesta a una consulta  "+ (tiempoTotalBitacora) +" seg");
 			
 			if(!ejecutar)
 			{
