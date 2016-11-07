@@ -13,6 +13,7 @@ import uniandes.gload.core.Task;
 public class Generator
 {
 	private final static Boolean SERVIDOR_CON_SEGURIDAD = true;
+	public static final String DEVOLVER_ATENDIDAS="devolver";
 
 	/**
 	 * Carga el servicio del generador del lib
@@ -75,5 +76,10 @@ public class Generator
 		TimeUnit.SECONDS.sleep(20);
 		System.out.println("tiempo de autenticacion promedio = "+tiempoAutenticacion/numClientes+ " miliseg");
 		System.out.println("tiempo de consulta promedio = "+tiempoConsulta/numClientes+ " miliseg");
+		s = new Socket("172.24.42.139", 4443);
+		pw = new PrintWriter(s.getOutputStream(), true);
+		BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+		pw.println(DEVOLVER_ATENDIDAS);
+		System.out.println("Numero de transacciones perdidas: "+ String.valueOf(carga-Integer.valueOf(br.readLine())));
 	}
 }

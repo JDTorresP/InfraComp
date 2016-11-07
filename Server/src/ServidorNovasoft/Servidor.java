@@ -37,6 +37,8 @@ public class Servidor   {
 	 * Constante que especifica el numero de threads que se usan en el pool de conexiones.
 	 */
 	public int N_THREADS = 16;
+	
+	public int numEfectivoAtencion=0;
 
 	/**
 	 * Puerto en el cual escucha el servidor. 
@@ -90,7 +92,7 @@ public class Servidor   {
 				else
 				{
 					System.out.println("Thread " + num + " recibe a un cliente.");
-					executor.submit(new Worker(num,sThread));
+					executor.submit(new Worker(num,sThread,this));
 					num++;
 				}
 

@@ -69,19 +69,24 @@ public class Worker implements Runnable {
 	public static final String INFO = "INFO";
 	public static final String ERROR = "ERROR";
 	public static final String ERROR_FORMATO = "Error en el formato. Cerrando conexion";
+	public static final String DEVOLVER_ATENDIDAS="devolver";
 	
 	
 	private int id;
 	private Socket ss;
 	private KeyPair keyPair;
+	private Servidor ser;
 	
-	public Worker(int pId, Socket pSocket) {
+	public Worker(int pId, Socket pSocket, Servidor ser) {
 		id = pId;
 		ss = pSocket;
+		this.ser=ser;
+		
 		// Adiciona la libreria como un proveedor de seguridad.
 		// Necesario para crear llaves.
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());	
 	}
+	
 	/**
 	 * Metodo que se encarga de imprimir en consola todos los errores que se 
 	 * producen durante la ejecuación del protocolo. 
@@ -130,10 +135,18 @@ public class Worker implements Runnable {
 			
 			String linea = read(reader);
 			
+			if(linea.equals(DEVOLVER_ATENDIDAS))
+			{
+				write(writer, String.valueOf(ser.numEfectivoAtencion));
+				ser.numEfectivoAtencion=0;
+				ss.close();
+			}
+			
 			if (!linea.equals(HOLA)) {
 				write(writer, ERROR_FORMATO);
 				throw new FontFormatException(linea);
 			}
+			
 			
 			// ////////////////////////////////////////////////////////////////////////
 			// Envia el status del servidor y recibe los algoritmos de codificacion
@@ -291,7 +304,9 @@ public class Worker implements Runnable {
 				String rta= Transformacion.codificar(Seguridad.symmetricEncryption("ERROR: No coinciden la consulta con su digest".getBytes(), llaveSimetrica, algoritmos[1]));
 				write(writer, rta );
 			}
+			
 			System.out.println("Thread " + id + "Terminando\n");
+			ser.numEfectivoAtencion++;
 			
 			
 			
