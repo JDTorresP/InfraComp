@@ -6,9 +6,11 @@ import uniandes.gload.core.Task;
 public class ClientServerTask extends Task {
 
 	private Boolean seguridadServidor = false;
+	private Generator gen;
 
-	 public ClientServerTask(Boolean seg) {
+	 public ClientServerTask(Boolean seg, Generator principal) {
 		seguridadServidor=seg;
+		gen = principal;
 	}
 	 
 	@Override
@@ -16,6 +18,9 @@ public class ClientServerTask extends Task {
 	{		
 		try {
 			Cliente client = new Cliente(seguridadServidor);
+			gen.tiempoAutenticacion+=client.resultadoTiempoComunicacion;
+			gen.tiempoConsulta+=client.resultadoTiempoConsulta;
+			gen.numClientes++;
 		} 
 		catch (Exception e) {
 			// TODO Auto-generated catch block

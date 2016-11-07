@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.concurrent.TimeUnit;
 
 import uniandes.gload.core.LoadGenerator;
 import uniandes.gload.core.Task;
@@ -17,6 +18,9 @@ public class Generator
 	 * Carga el servicio del generador del lib
 	 */
 	private LoadGenerator generator;
+	public static Long tiempoAutenticacion=0L;
+	public static Long tiempoConsulta=0L;
+	public static int numClientes =0 ;
 
 	public Generator(int ntask, int gap, int numThrea)
 	{
@@ -30,10 +34,10 @@ public class Generator
 
 	private Task createTask()
 	{
-		return new ClientServerTask(SERVIDOR_CON_SEGURIDAD);
+		return new ClientServerTask(SERVIDOR_CON_SEGURIDAD,this);
 	}
 
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws IOException, InterruptedException
 	{
 		boolean eje=true;
 		int es=0;
@@ -68,5 +72,8 @@ public class Generator
 		s.close();
 		Generator gen = new Generator(carga,retardo,nThreads);
 		
+		TimeUnit.SECONDS.sleep(20);
+		System.out.println("tiempo de autenticacion promedio = "+tiempoAutenticacion/numClientes+ " miliseg");
+		System.out.println("tiempo de consulta promedio = "+tiempoConsulta/numClientes+ " miliseg");
 	}
 }

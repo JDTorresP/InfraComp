@@ -73,7 +73,12 @@ public class Cliente {
 	private PublicKey publicKey;
 
 	private PrivateKey privateKey;
-
+	
+	private Long inicioComunica = 0L;
+	private Long inicioConsulta = 0L;
+	
+	public Long resultadoTiempoComunicacion=0L;
+	public Long resultadoTiempoConsulta=0L;
 
 	//Constructor
 	public Cliente(boolean seguridad) throws Exception{
@@ -171,8 +176,8 @@ public class Cliente {
 
 		PublicKey llavePublicaServidor = null;
 		SecretKey llaveSimetrica = null;
-		Long inicioComunicacion = System.currentTimeMillis();
-		Long inicioConsulta = 0L;
+		inicioComunica = System.currentTimeMillis();
+		
 		while (ejecutar) {
 
 			if(estado==0)
@@ -239,8 +244,7 @@ public class Cliente {
 				//Cifrar la llave simétrica y enviarla de vuelta
 				byte[] llaveRecifrada = cifrar(llaveDescifrada, llavePublicaServidor, algoritmoAsimetrico);
 				fromUser=deBytesAEnteros(llaveRecifrada);
-				Long tiempoTotalBitacora = System.currentTimeMillis()- inicioComunicacion;
-				System.out.println(" tiempo de respuesta para autenticar a los participantes  "+ (tiempoTotalBitacora) +" milisegundos");
+				
 			}
 			else if(estado==5)
 			{
@@ -253,17 +257,14 @@ public class Cliente {
 				byte[] resumenCifrado = cifrar(resumen, llaveSimetrica, algoritmoSimetrico);			
 
 				fromUser=deBytesAEnteros(consultaCifrada)+":"+ deBytesAEnteros(resumenCifrado);
-				
 				ejecutar=false;
 				
 			}
 
 //			System.out.println("Cliente: " + fromUser);
 			pw.println(fromUser);
-			
 			fromServidor=recibirRespuesta();
-			Long tiempoTotalBitacora = System.currentTimeMillis()- inicioConsulta;
-			System.out.println("tiempo de respuesta a una consulta  "+ (tiempoTotalBitacora) +" seg");
+			
 			
 			if(!ejecutar)
 			{
@@ -342,7 +343,18 @@ public class Cliente {
 	private String recibirRespuesta() throws Exception
 	{
 		String rta = br.readLine();
-
+		if(estado ==4)
+		{
+		Long tiempoTotalBitacora = System.currentTimeMillis()- inicioComunica;
+		resultadoTiempoComunicacion=tiempoTotalBitacora;
+		System.out.println(" tiempo de respuesta para autenticar a los participantes  "+ (tiempoTotalBitacora) +" milisegundos");	
+		}else if (estado==5)
+		{
+			Long tiempoTotalBitacora = System.currentTimeMillis()- inicioConsulta;
+			resultadoTiempoConsulta = tiempoTotalBitacora;
+			System.out.println("tiempo de respuesta a una consulta  "+ (tiempoTotalBitacora) +" miliseg");
+		}
+		
 		if(rta != null)
 		{
 			if(rta.equals("ERROR"))
