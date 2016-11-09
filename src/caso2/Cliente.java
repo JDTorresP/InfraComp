@@ -289,7 +289,7 @@ public class Cliente {
 
 		PublicKey llavePublicaServidor = null;
 		SecretKey llaveSimetrica = null;
-
+		inicioComunica = System.currentTimeMillis();
 		while (ejecutar) {
 
 			if(estado==0)
@@ -317,6 +317,7 @@ public class Cliente {
 			}
 			else if(estado==5 && fromServidor.equals("OK"))
 			{
+				inicioConsulta = System.currentTimeMillis();
 				fromUser="CIFRADOLS1";
 				ejecutar=false;				
 			}
@@ -343,6 +344,8 @@ public class Cliente {
 	private String recibirRespuesta() throws Exception
 	{
 		String rta = br.readLine();
+		
+		//se adicionan tiempos de respuesta de autenticacion y de consulta
 		if(estado ==4)
 		{
 		Long tiempoTotalBitacora = System.currentTimeMillis()- inicioComunica;
